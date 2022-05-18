@@ -14,8 +14,7 @@ library(dplyr)
 library(tibble)
 library(readr)
 
-#Читаем данные из файла, пропускаем первую строку, заменяем текстовые 'NA',
-# пустые и сгенерированные пороговые значения на NA, игнорируем строки с "[" 
+#Читаем данные из файла, пропускаем первую строку, заменяем текстовые 'NA', пустые и сгенерированные пороговые значения на NA, игнорируем строки с "[" 
 eddypro=read.csv("eddypro.csv",skip=1,na=c("","NA","-9999","-9999.0"), comment=c("["))
 #удаляем первую строку
 eddypro=eddypro[-1,]
@@ -81,11 +80,9 @@ summary(model1)
 anova(model1)
 #Построим график нормального распределения:
 plot(model1,2)
-# согласно ДА мы видим какие переменные у нас не значимые: 
-# air_temperature, e , es, RH, flowrate
+# согласно ДА мы видим какие переменные у нас не значимые: air_temperature, e , es, RH, flowrate
 
-# cоздадим модель 2 добавив в неё значимые переменные из результатов
-#функции anova()(со значимостью до 0.01, соответственно ***,** и * пометки)
+# Создадим модель 2 добавив в неё значимые переменные из результатов функции anova()(со значимостью до 0.01, соответственно ***,** и * пометки)
 formula2= co2_flux~DOY+ h2o_molar_density +h2o_mole_fraction+
   h2o_mixing_ratio +sonic_temperature+air_pressure+
   air_density+air_heat_capacity+air_molar_volume+water_vapor_density+
@@ -106,8 +103,7 @@ plot(model2,2)
 # Сравним модели 2 и 1
 anova(model2, model1)
 
-# Модель 3 - добавим в неё переменные, полученные при помощи
-#функции anova() с коэффициентом значимости меньше 0.001
+# Модель 3 - добавим в неё переменные, полученные при помощи функции anova() с коэффициентом значимости меньше 0.001
 formula3= co2_flux~DOY+ h2o_molar_density +h2o_mole_fraction+
   h2o_mixing_ratio +sonic_temperature+air_pressure+
   air_heat_capacity+water_vapor_density+
@@ -160,20 +156,14 @@ cor_teaching_eddypro = select(teaching_eddypro, DOY, h2o_molar_density,
 cor_eddypro = cor(cor_teaching_eddypro) %>% as.data.frame
 #Построение графиков по полученной модели
 
-#Построим график co2_flux от co2_flux, использовав значения,
-#полученные на модели 4, и на основе обучающей выборки
-# в идеале линия должна  пройти через все точки, а так как график co2_flux
-#от самого себя, то он должен идти под углом 45 градусов
+#Построим график co2_flux от co2_flux, использовав значения, полученные на модели 4 и на основе обучающей выборки
 qplot(co2_flux,co2_flux, data = teaching_eddypro)+ geom_line(aes(y = predict(model4, teaching_eddypro)))
 #График расположен под углом 45 градусов и проходит почти через все точки
 
-#Построим график co2_flux от co2_flux, использовав значения,
-#полученные на модели 4, и на основе тестирующей выборки
+#Построим график co2_flux от co2_flux, использовав значения, полученные на модели 4 и на основе тестирующей выборки
 qplot(co2_flux,co2_flux, data = testing_eddypro)+ geom_line(aes(y = predict(model4, testing_eddypro)))
 
-#Для примера выведем несколько графиков зависимостей переменной co2_flux от:
-#sonic_temperature, air_pressure, h2o_molar_density, 
-#un_co2_flux на основе тестирующей модели
+#Для примера выведем несколько графиков зависимостей переменной co2_flux от: sonic_temperature, air_pressure, h2o_molar_density, un_co2_flux на основе тестирующей модели
 qplot(sonic_temperature,co2_flux, data = testing_eddypro) + geom_line(aes(y = predict(model4, testing_eddypro)))
 qplot(air_pressure,co2_flux, data = testing_eddypro) + geom_line(aes(y = predict(model4, testing_eddypro)))
 qplot(h2o_molar_density,co2_flux, data = testing_eddypro) + geom_line(aes(y = predict(model4, testing_eddypro)))
